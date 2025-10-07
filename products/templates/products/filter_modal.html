@@ -1,0 +1,115 @@
+<div class="filter-overlay" onclick="closeFilters()"></div>
+        <div class="filter-panel">
+            <form id="filter-form" method="get" action=".">
+                <div class="filter-header">
+                    <h2 class="filter-title">Фильтры</h2>
+                    <button type="button" class="filter-close" onclick="closeFilters()">×</button>
+                </div>
+
+                <div class="filter-group">
+                    <h3 class="filter-group-title">Категория</h3>
+                    <div class="filter-options">
+                        {% for category in categories %}
+                        <div class="filter-option">
+                            <input type="checkbox" id="cat_electronics" name="category" value="{{ category.slug }}">
+                            <label for="cat_electronics">{{ category.name }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <h3 class="filter-group-title">Цена</h3>
+                    <div class="price-range">
+                        <input type="number" name="min_price" placeholder="От" min="0">
+                        <input type="number" name="max_price" placeholder="До" min="0">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <h3 class="filter-group-title">Размеры</h3>
+                    <div class="filter-options">
+                        {% for size in sizes %}
+                        <div class="filter-option">
+                            <input type="checkbox" id="sizes" name="category" value="{{ size.size }}">
+                            <label for="sizes">{{ size.size }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <h3 class="filter-group-title">Цвет</h3>
+                    <div class="color-input">
+                        <input type="text" name="color" placeholder="Введите цвет (красный, синий...)">
+                    </div>
+                </div>
+
+                <button type="submit" class="filter-apply">Применить фильтры</button>
+                <button type="button" class="filter-clear" onclick="clearFilters()">Сбросить фильтры</button>
+            </form>
+        </div>
+
+
+<script>
+        function toggleFilters() {
+            document.querySelector('.filter-panel').classList.toggle('active');
+            document.querySelector('.filter-overlay').classList.toggle('active');
+            document.body.style.overflow = document.body.style.overflow === 'hidden' ? '' : 'hidden';
+        }
+
+        function closeFilters() {
+            document.querySelector('.filter-panel').classList.remove('active');
+            document.querySelector('.filter-overlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function clearFilters() {
+            // Очищаем все поля формы
+            document.querySelectorAll('#filter-form input').forEach(input => {
+                if (input.type === 'checkbox' || input.type === 'radio') {
+                    input.checked = false;
+                } else {
+                    input.value = '';
+                }
+            });
+
+            // Отправляем форму (это приведет к сбросу фильтров)
+            document.getElementById('filter-form').submit();
+        }
+
+        // Закрытие по ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeFilters();
+        });
+
+        // Закрываем фильтры после отправки формы
+        document.getElementById('filter-form').addEventListener('submit', function() {
+            setTimeout(closeFilters, 300);
+        });
+
+        // Восстанавливаем значения фильтров из URL при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+
+            // Восстанавливаем категории
+            urlParams.getAll('category').forEach(category => {
+                const checkbox = document.querySelector(`input[name="category"][value="${category}"]`);
+                if (checkbox) checkbox.checked = true;
+            });
+
+            // Восстанавливаем цену
+            const minPrice = urlParams.get('min_price');
+            const maxPrice = urlParams.get('max_price');
+            if (minPrice) document.querySelector('input[name="min_price"]').value = minPrice;
+            if (maxPrice) document.querySelector('input[name="max_price"]').value = maxPrice;
+
+            // Восстанавливаем размеры
+            const sizes = urlParams.get('sizes');
+            if (sizes) document.querySelector('input[name="sizes"]').value = sizes;
+
+            // Восстанавливаем цвет
+            const color = urlParams.get('color');
+            if (color) document.querySelector('input[name="color"]').value = color;
+        });
+    </script>

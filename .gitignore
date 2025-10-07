@@ -1,0 +1,15 @@
+aura_venv/
+.pylintrc
+__pycache__/
+django/
+
+
+.vscode
+.idea
+.env
+django.log
+security.log
+
+db.sqlite3
+media/
+debug.log
