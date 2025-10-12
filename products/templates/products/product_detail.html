@@ -1,10 +1,11 @@
 {% extends 'products/base.html' %}
 {% load static %}
 
-
 {% block title %} {{ title }} - {{ product_name }} {% endblock %}
 
-{% block script %}<script src="{% static '/products/js/product_detail.js' %}" defer></script>{% endblock %}
+{% block script %}
+<script src="{% static '/products/js/product_detail.js' %}" defer></script>
+{% endblock %}
 
 {% block content %}
 
@@ -13,31 +14,50 @@
         <!-- Хлебные крошки -->
         <div class="mb-8 text-sm text-gray-600">
             <a href="#"
-               class="text-black hover:text-gray-600 hover:bg-gray-100 transition-colors duration-200 rounded px-2 py-1"
-               hx-get="{% url 'products:catalog' %}"
-               hx-target="body"
-               hx-swap="outerHTML"
-               hx-push-url="true">
+                class="text-black hover:text-gray-600 hover:bg-gray-100 transition-colors duration-200 rounded px-2 py-1"
+                hx-get="{% url 'products:catalog' %}" hx-target="body" hx-swap="outerHTML" hx-push-url="true">
                 Каталог
             </a>
             <span class="mx-2">/</span>
             <span>{{ product.name }}</span>
         </div>
 
+        {% if messages %}
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+            {% for message in messages %}
+            <div class="fixed top-24 right-4 z-50 animate-slide-in-right">
+                <div class="bg-black border rounded-lg shadow-lg p-4 max-w-sm">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">            
+                            <p class="text-white font-medium">{{ message }}</p>
+                        </div>
+                        <button onclick="this.parentElement.parentElement.remove()"
+                            class="text-white transition-colors duration-200 ml-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12">
             <!-- Галерея товара -->
             <div class="space-y-4">
                 <img src="{{ product.main_image.url }}"
-                     class="w-full h-96 lg:h-[500px] object-cover rounded-lg bg-gray-50 border border-gray-200"
-                     id="main-product-image"
-                     alt="{{ product.name }}">
+                    class="w-full h-96 lg:h-[500px] object-cover rounded-lg bg-gray-50 border border-gray-200"
+                    id="main-product-image" alt="{{ product.name }}">
 
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {% for product_image in product.product_images.all %}
-                    <img src="{{ product_image.image.url }}"
-                         alt="{{ product.name }} - вид {{ forloop.counter }}"
-                         class="w-full h-24 object-cover rounded border border-gray-200 cursor-pointer transition-all duration-200 hover:border-black hover:scale-105 p-0.5 {% if forloop.first %}border-black{% endif %}"
-                         onclick="changeMainImage('{{ product_image.image.url }}', this)">
+                    <img src="{{ product_image.image.url }}" alt="{{ product.name }} - вид {{ forloop.counter }}"
+                        class="w-full h-24 object-cover rounded border border-gray-200 cursor-pointer transition-all duration-200 hover:border-black hover:scale-105 p-0.5 {% if forloop.first %}border-black{% endif %}"
+                        onclick="changeMainImage('{{ product_image.image.url }}', this)">
                     {% endfor %}
                 </div>
             </div>
@@ -55,46 +75,48 @@
                 <p class="text-gray-600 leading-relaxed">
                     {{ product.description }}
                 </p>
-                <form method="post" action="{% url 'cart:add_to_cart' product.slug %}">
+
+                
+                <form method="post" hx-post="{% url 'cart:add_to_cart' product.slug %}" hx-target="body"
+                    hx-swap="outerHTML" hx-push-url="true">
                     {% csrf_token %}
-                <!-- Выбор размера -->
-                <div class="space-y-4">
-                    {% if product.product_sizes.all %}
-                    <h3 class="text-lg font-medium text-black">Размер</h3>
-                    <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2" id="size-grid">
-                        {% for product_size in product.product_sizes.all %}
+                    <!-- Выбор размера -->
+                    <div class="space-y-4">
+                        {% if product.product_sizes.all %}
+                        <h3 class="text-lg font-medium text-black">Размер</h3>
+                        <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2" id="size-grid">
+                            {% for product_size in product.product_sizes.all %}
                             {% if product_size.stock != 0 %}
-                                <input type="radio" 
-                                       name="size_id" 
-                                       value="{{ product_size.id }}" 
-                                       id="size-{{ product_size.id }}" 
-                                       class="hidden">
-                                <label for="size-{{ product_size.id }}" 
-                                       class="size-option p-3 border border-gray-200 rounded text-center cursor-pointer font-medium transition-all duration-200 hover:border-black hover:bg-gray-50"
-                                       data-size="{{ product_size.size.size }}"
-                                       data-size-id="{{ product_size.id }}">
-                                    {{ product_size.size.size }}
-                                </label>
+                            <input type="radio" name="size_id" value="{{ product_size.id }}"
+                                id="size-{{ product_size.id }}" class="hidden">
+                            <label for="size-{{ product_size.id }}"
+                                class="size-option p-3 border border-gray-200 rounded text-center cursor-pointer font-medium transition-all duration-200 hover:border-black hover:bg-gray-50"
+                                data-size="{{ product_size.size.size }}" data-size-id="{{ product_size.id }}">
+                                {{ product_size.size.size }}
+                            </label>
                             {% endif %}
-                        {% endfor %}
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <h3 class="text-lg font-medium text-gray-500">Нет в наличии</h3>
+                        {% endif %}
                     </div>
-                    {% else %}
-                    <h3 class="text-lg font-medium text-gray-500">Нет в наличии</h3>
-                    {% endif %}
-                </div>
-                    <input type="hidden" name="quantity" value="1">
 
+                    <!-- Увеличенный отступ перед кнопкой -->
+                    <div class="mt-8">
+                        <input type="hidden" name="quantity" value="1">
 
-                <!-- Действия с товаром -->
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <button type="submit" class="add-to-cart-btn flex-1 py-4 px-8 bg-black text-white border-none rounded-lg cursor-pointer text-base font-medium transition-all duration-200 hover:bg-gray-800 hover:-translate-y-0.5 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                            
-                            {% if product.product_sizes.all %}{% else %}disabled{% endif %}>
-                        Добавить в корзину
-                    </button>
+                        <!-- Действия с товаром -->
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <button type="submit"
+                                class="add-to-cart-btn flex-1 py-4 px-8 bg-black text-white border-none rounded-lg cursor-pointer text-base font-medium transition-all duration-200 hover:bg-gray-800 hover:-translate-y-0.5 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                {% if product.product_sizes.all %}{% else %}disabled{% endif %}>
+                                Добавить в корзину
+                            </button>
+                        </div>
+                    </div>
+                </form>
 
-                </div>
-</form>
                 <!-- Детали товара -->
                 <div class="border-t border-gray-200 pt-6 space-y-4">
                     <div class="flex justify-between items-center py-3 border-b border-gray-100 last:border-b-0">
@@ -112,20 +134,14 @@
         <!-- Кнопка назад -->
         <div class="text-center mt-8">
             <a href="#"
-               class="inline-flex items-center gap-2 py-4 px-8 border border-gray-200 rounded-lg text-black no-underline transition-all duration-200 hover:border-black hover:bg-gray-50 font-medium"
-               hx-get="{% url 'products:catalog' %}"
-               hx-target="body"
-               hx-swap="outerHTML"
-               hx-push-url="true">
+                class="inline-flex items-center gap-2 py-4 px-8 border border-gray-200 rounded-lg text-black no-underline transition-all duration-200 hover:border-black hover:bg-gray-50 font-medium"
+                hx-get="{% url 'products:catalog' %}" hx-target="body" hx-swap="outerHTML" hx-push-url="true">
                 ← Назад к каталогу
             </a>
         </div>
     </div>
 </div>
 
-
-
-<!-- HTMX индикаторы -->
 <style>
     .htmx-indicator {
         opacity: 0;
@@ -146,11 +162,39 @@
     }
 
     /* Стили для выбранного размера */
-    input[type="radio"]:checked + label {
+    input[type="radio"]:checked+label {
         border-color: #000;
         background-color: #000;
         color: white;
     }
+
+    @keyframes slide-in-right {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+
+            .animate-slide-in-right {
+                animation: slide-in-right 0.3s ease-out forwards;
+            }
+
+            /* Автоматическое скрытие через 2 секунды */
+            .animate-slide-in-right {
+                animation: slide-in-right 0.3s ease-out forwards, slide-out-right 0.3s ease-in 2s forwards;
+            }
+
+            @keyframes slide-out-right {
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
 </style>
 
 {% endblock %}
