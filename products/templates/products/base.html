@@ -8,422 +8,158 @@
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     {% block script %}{% endblock %}
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', 'Helvetica', 'Arial', sans-serif;
-        }
-
-        body {
-            background-color: #ffffff;
-            color: #000000;
-            line-height: 1.6;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem 2rem;
-            background-color: #ffffff;
-            color: #000000;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            border-bottom: 1px solid #e5e5e5;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-        }
-
-        .shop-name {
-            font-size: 1.5rem;
-            font-weight: 600;
-            white-space: nowrap;
-            color: #000000;
-            text-decoration: none;
-            letter-spacing: -0.5px;
-        }
-
-        .categories-container {
-            position: relative;
-        }
-
-        .categories-toggle {
-            background: none;
-            border: 1px solid #d4d4d4;
-            color: #000000;
-            cursor: pointer;
-            font-size: 0.95rem;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .categories-toggle:hover {
-            background-color: #f5f5f5;
-            border-color: #a3a3a3;
-        }
-
-        .categories-toggle::after {
-            content: "▼";
-            font-size: 0.7rem;
-            transition: transform 0.2s ease;
-        }
-
-        .categories-container:focus-within .categories-toggle::after,
-        .categories-container:hover .categories-toggle::after {
-            transform: rotate(180deg);
-        }
-
-        .categories-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background-color: #ffffff;
-            width: 220px;
-            padding: 1rem;
-            display: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            z-index: 50;
-            border: 1px solid #e5e5e5;
-            border-radius: 2px;
-        }
-
-        .categories-container:focus-within .categories-dropdown,
-        .categories-container:hover .categories-dropdown {
-            display: block;
-        }
-
-        .categories-dropdown ul {
-            list-style: none;
-        }
-
-        .categories-dropdown li {
-            margin-bottom: 0.8rem;
-        }
-
-        .categories-dropdown a {
-            color: #000000;
-            text-decoration: none;
-            transition: color 0.2s ease;
-            display: block;
-            padding: 0.4rem 0;
-            font-size: 0.95rem;
-            border-bottom: 1px solid transparent;
-        }
-
-        .categories-dropdown a:hover {
-            color: #404040;
-            border-bottom-color: #000000;
-        }
-
-        .catalog-link {
-            color: #000000;
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            transition: background-color 0.2s ease;
-            white-space: nowrap;
-            font-size: 0.95rem;
-            border: 1px solid transparent;
-        }
-
-        .catalog-link:hover {
-            background-color: #f5f5f5;
-            border-color: #d4d4d4;
-        }
-
-        .search-container {
-            flex-grow: 1;
-            max-width: 500px;
-            margin: 0 1rem;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 0.8rem 1.2rem;
-            border: 1px solid #d4d4d4;
-            border-radius: 6px;
-            background-color: #ffffff;
-            color: #000000;
-            outline: none;
-            transition: border-color 0.2s ease;
-            font-size: 0.95rem;
-        }
-
-        .search-input:focus {
-            border-color: #a3a3a3;
-            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
-        }
-
-        .search-input::placeholder {
-            color: #a3a3a3;
-        }
-
-        .header-icons {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .icon-link {
-            color: #000000;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 102px;
-            height: 42px;
-            border-radius: 3px;
-            transition: all 0.2s ease;
-            border: 1px solid transparent;
-            font-size: 1.1rem;
-        }
-
-        .icon-link:hover {
-            background-color: #f5f5f5;
-            border-color: #d4d4d4;
-        }
-
-        .main-content {
-            padding: 2.5rem;
-            flex-grow: 1;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .footer {
-            background-color: #ffffff;
-            color: #000000;
-            text-align: center;
-            padding: 2rem;
-            margin-top: auto;
-            border-top: 1px solid #e5e5e5;
-        }
-
-        .footer p {
-            margin: 0;
-            font-size: 0.9rem;
-            color: #666666;
-        }
-
-        .content-block {
-            background: #fafafa;
-            padding: 2.5rem;
-            border-radius: 8px;
-            border: 1px solid #e5e5e5;
-        }
-
-        h1 {
-            margin-bottom: 1.5rem;
-            font-weight: 400;
-            font-size: 2rem;
-            color: #000000;
-        }
-
-        p {
-            margin-bottom: 1rem;
-            color: #666666;
-            line-height: 1.7;
-        }
-
-        /* HTMX стили */
-        .htmx-indicator {
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            color: #666666;
-        }
-
-        .htmx-request .htmx-indicator {
-            opacity: 1;
-        }
-
-        .loading-dots {
-            display: inline-flex;
-            gap: 2px;
-        }
-
-        .loading-dots span {
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            background-color: #000000;
-            animation: pulse 1.5s infinite ease-in-out;
-        }
-
-        .loading-dots span:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .loading-dots span:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.3; transform: scale(0.8); }
-            50% { opacity: 1; transform: scale(1.2); }
-        }
-
-        /* Адаптивность */
-        @media (max-width: 968px) {
-            .header {
-                padding: 1rem;
-                gap: 1rem;
-            }
-
-            .search-container {
-                order: 1;
-                width: 100%;
-                max-width: none;
-                margin: 0;
-            }
-
-            .shop-name {
-                font-size: 1.3rem;
-            }
-        }
-
-        @media (max-width: 640px) {
-            .header {
-                flex-direction: column;
-                align-items: stretch;
-                text-align: center;
-            }
-
-            .shop-name {
-                margin-bottom: 0.5rem;
-            }
-
-            .categories-container,
-            .catalog-link {
-                width: 100%;
-                text-align: center;
-            }
-
-            .categories-toggle {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .categories-dropdown {
-                left: 50%;
-                transform: translateX(+50%);
-            }
-
-            .header-icons {
-                justify-content: center;
-                width: 100%;
-                margin-top: 0.5rem;
-            }
-
-            .main-content {
-                padding: 1.5rem;
-            }
-
-            .content-block {
-                padding: 1.5rem;
-            }
-        }
-    </style>
 </head>
-<body>
-    <header class="header">
-        <a href="{% url 'products:index' %}" class="shop-name" hx-get="{% url 'products:index' %}" hx-target="body" hx-swap="outerHTML" hx-push-url="true">
-            AURA STORE
-        </a>
+<body class="bg-white text-black min-h-screen flex flex-col font-sans antialiased">
+    <!-- Header -->
+    <header class="bg-white sticky top-0 z-50 border-b border-gray-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between py-4 flex-wrap gap-4">
+                <!-- Shop Name -->
+                <a href="{% url 'products:index' %}" 
+                   class="text-xl font-semibold text-black no-underline tracking-tight whitespace-nowrap hover:opacity-80 transition-opacity"
+                   hx-get="{% url 'products:index' %}" 
+                   hx-target="body" 
+                   hx-swap="outerHTML" 
+                   hx-push-url="true">
+                    AURA STORE
+                </a>
 
-        <div class="categories-container" tabindex="0">
-            <button class="categories-toggle" style="font-size: 1.1rem;">КАТЕГОРИИ</button>
-            <div class="categories-dropdown">
-                <ul>
-                    {% for category in categories %}
-                    <li><a  href="{% url 'products:catalog_category' category.slug %}"
-                            hx-get="{% url 'products:catalog_category' category.slug %}"
-                            hx-target="body"
-                            hx-swap="outerHTML"
-                            hx-push-url="true">{{ category.name|upper }}</a></li>
+                <!-- Categories Dropdown -->
+                <div class="relative group" x-data="{ open: false }">
+                    <button class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium uppercase hover:border-gray-600 transition-all duration-200"
+                            @click="open = !open"
+                            @mouseenter="open = true"
+                            @mouseleave="open = false">
+                        КАТЕГОРИИ
+                        <svg class="w-3 h-3 transform transition-transform duration-200" 
+                             :class="{ 'rotate-180': open }" 
+                             fill="none" 
+                             stroke="currentColor" 
+                             viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    
+                    <div class="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 shadow-lg rounded-lg z-50 transition-all duration-200"
+                         x-show="open"
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 transform -translate-y-2"
+                         x-transition:enter-end="opacity-100 transform translate-y-0"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 transform translate-y-0"
+                         x-transition:leave-end="opacity-0 transform -translate-y-2"
+                         @mouseenter="open = true"
+                         @mouseleave="open = false"
+                         style="display: none;">
+                        <ul class="py-2">
+                            {% for category in categories %}
+                            <li>
+                                <a href="{% url 'products:catalog_category' category.slug %}"
+                                   class="block px-4 py-2 text-sm text-black no-underline hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors duration-200 uppercase"
+                                   hx-get="{% url 'products:catalog_category' category.slug %}"
+                                   hx-target="body"
+                                   hx-swap="outerHTML"
+                                   hx-push-url="true">
+                                    {{ category.name|upper }}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
 
-                    {% endfor %}
-                </ul>
+                <!-- Catalog Link -->
+                <a class="px-4 py-2 text-sm font-medium uppercase text-black no-underline border border-transparent rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all duration-200"
+                   href="{% url 'products:catalog' %}"
+                   hx-get="{% url 'products:catalog' %}"
+                   hx-target="body"
+                   hx-swap="outerHTML"
+                   hx-push-url="true">
+                    КАТАЛОГ ТОВАРОВ
+                </a>
+
+                <!-- Search -->
+                <div class="flex-1 max-w-md mx-4">
+                    <div class="relative">
+                        <input type="text"
+                               id="search-input"
+                               name="q"
+                               placeholder="SEARCH"
+                               value="{{ search_query|default:'' }}"
+                               class="w-full bg-white border border-gray-300 rounded-lg py-2 px-4 text-sm font-medium uppercase focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-colors duration-200"
+                               hx-get="{% url 'products:catalog' %}"
+                               hx-target="body"
+                               hx-push-url="true"
+                               hx-trigger="input delay:500ms"
+                               hx-swap="outerHTML">
+                    </div>
+                </div>
+
+                <!-- Header Icons -->
+                <div class="flex items-center gap-3">
+                    <!-- Account -->
+                    <a href="#" 
+                       class="px-4 py-2 text-sm font-medium uppercase text-black no-underline border border-transparent rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all duration-200"
+                       hx-get="/profile" 
+                       hx-target="body" 
+                       hx-swap="outerHTML" 
+                       hx-push-url="true">
+                        ACCOUNT
+                    </a>
+
+                    <!-- Cart -->
+                    <a href="{% url 'cart:cart' %}" 
+                       class="px-4 py-2 text-sm font-medium uppercase text-black no-underline border border-transparent rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all duration-200"
+                       hx-get="{% url 'cart:cart' %}" 
+                       hx-target="body" 
+                       hx-swap="outerHTML" 
+                       hx-push-url="true">
+                        CART
+                    </a>
+
+                    <!-- HTMX Indicator -->
+                    <span class="htmx-indicator flex items-center gap-1 opacity-0 transition-opacity duration-300">
+                        <span class="flex gap-1">
+                            <span class="w-1.5 h-1.5 bg-black rounded-full animate-pulse"></span>
+                            <span class="w-1.5 h-1.5 bg-black rounded-full animate-pulse" style="animation-delay: 0.2s"></span>
+                            <span class="w-1.5 h-1.5 bg-black rounded-full animate-pulse" style="animation-delay: 0.4s"></span>
+                        </span>
+                    </span>
+                </div>
             </div>
-        </div>
-
-        <a class="catalog-link" style="font-size: 1.1rem;"
-           href="{% url 'products:catalog' %}"
-           hx-get="{% url 'products:catalog' %}"
-           hx-target="body"
-           hx-swap="outerHTML"
-           hx-push-url="true">
-
-            КАТАЛОГ ТОВАРОВ
-        </a>
-
-
-
-        <div class="header-icons">
-
-            <div id="mobile-search-wrapper">
-                <div class="relative inline-block">
-    <input type="text"
-           id="search-input"
-           name="q"
-           placeholder="SEARCH"
-           value="{{ search_query|default:'' }}"
-           class="w-40 bg-white border border-gray-300 py-2 px-3 text-sm font-medium uppercase focus:outline-none focus:border-gray-900"
-           hx-get="{% url 'products:catalog' %}"
-           hx-target="body"
-           hx-push-url="true"
-           hx-trigger="input delay:500ms"
-           hx-swap="innerHTML">
-
-</div>
-
-
-            </div>
-
-            <a href="#" class="icon-link" title="Профиль" hx-get="/profile" hx-target=".main-content" hx-swap="outerHTML" hx-push-url="true">
-                ACCOUNT
-            </a>
-            <a href="#" class="icon-link" title="Корзина" hx-get="/cart" hx-target=".main-content" hx-swap="outerHTML" hx-push-url="true">
-                CART(0)
-            </a>
-            <span class="htmx-indicator">
-                <span class="loading-dots">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </span>
-            </span>
         </div>
     </header>
 
-    <main class="main-content">
-        {% block content %}
-
-        <!-- Контент будет заменяться через HTMX -->
-        <h1>Добро пожаловать в Aura Store</h1>
-        <p>Используйте навигацию выше для просмотра товаров.</p>
-
-        {% endblock %}
+    <!-- Main Content -->
+    <main class="flex-1 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {% block content %}
+            <!-- Default content -->
+            <div class="text-center py-16">
+                <h1 class="text-3xl font-light text-black mb-6 tracking-tight">Добро пожаловать в Aura Store</h1>
+                <p class="text-gray-600 text-lg">Используйте навигацию выше для просмотра товаров.</p>
+            </div>
+            {% endblock %}
+        </div>
     </main>
 
-    <footer class="footer">
-        <p>© 2024 MINIMALSHOP. Все права защищены.</p>
-        <p>Минимализм · Элегантность · Функциональность</p>
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 py-8 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-sm text-gray-600 mb-2">© 2024 MINIMALSHOP. Все права защищены.</p>
+            <p class="text-sm text-gray-600">Минимализм · Элегантность · Функциональность</p>
+        </div>
     </footer>
 
+    <!-- HTMX Styles -->
+    <style>
+        .htmx-request .htmx-indicator {
+            opacity: 1;
+        }
+        .htmx-request {
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+    </style>
 </body>
 </html>

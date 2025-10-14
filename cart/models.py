@@ -11,11 +11,11 @@ class Cart(models.Model):
 
     @property
     def total_items(self):
-        return Decimal(sum(item.quantity for item in self.items.all()))
+        return sum(item.quantity for item in self.items.all())
 
     @property
     def subtotal(self):
-        return Decimal(sum(item.quantity * item.price for item in self.items.all()))
+        return Decimal(sum(item.quantity * item.product.price for item in self.items.all()))
 
     def add_product(self, product, product_size, quantity=1):
         cart_item, created = CartItem.objects.get_or_create(

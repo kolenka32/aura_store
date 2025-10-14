@@ -1,0 +1,147 @@
+{% extends 'products/base.html' %}
+{% load static %}
+
+{% block title %}Корзина{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-white py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Заголовок -->
+        <div class="text-center mb-12">
+            <h1 class="text-3xl font-medium text-black mb-4">Корзина</h1>
+            <div class="w-16 h-0.5 bg-black mx-auto"></div>
+        </div>
+
+        {% include 'cart/message.html' %}
+
+
+        {% if cart_items %}
+        <!-- Содержимое корзины -->
+        <div class="space-y-6 mb-8">
+            {% for item in cart_items %}
+                <!-- Товар -->
+
+            <div class="bg-white border border-gray-200 rounded-lg p-6 transition-all duration-200 hover:border-black">
+                <div class="flex flex-col md:flex-row gap-6">
+                    <a  href="{% url 'products:product_detail' item.product.slug %}"
+                hx-get="{% url 'products:product_detail' item.product.slug %}"
+                hx-target="body"
+                hx-swap="outerHTML"
+                hx-push-url="true">
+                    <!-- Изображение товара -->
+                    <div class="flex-shrink-0">
+                        <img src="{{ item.product.main_image.url }}"
+                             alt="{{ item.product.name }}"
+                             class="w-24 h-24 md:w-32 md:h-32 object-cover rounded border border-gray-200">
+                    </div>
+                    </a>
+                    <!-- Информация о товаре -->
+                    <div class="flex-1">
+                        <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+                            <div class="space-y-2">
+                                <h3 class="text-lg font-medium text-black">{{ item.product.name }}</h3>
+                                <p class="text-gray-600 text-sm">Размер: {{ item.product_size.size }}</p>
+                                <p class="text-lg font-medium text-black">{{ item.product.price }} * {{ item.quantity }} = {{ item.total_price }} ₽</p>
+                            </div>
+
+                            <!-- Управление количеством -->
+                            <div class="flex items-center gap-4">
+                                <form method="post" action="{% url 'cart:update_cart_quantity' item.id %}" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded hover:border-black transition-colors duration-200">
+                                            <input type="hidden" name="-" value="-">
+                                        <span class="text-lg font-light">−</span>
+                                    </button>
+                                </form>
+
+                                <span class="text-lg font-medium text-black min-w-8 text-center">{{ item.quantity }}</span>
+
+                                <form method="post" action="{% url 'cart:update_cart_quantity' item.id %}" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded hover:border-black transition-colors duration-200">
+                                            <input type="hidden" name="+" value="+">
+                                        <span class="text-lg font-light">+</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+            </div>
+
+                <!-- Удаление товара -->
+                        <div class="mt-4 pt-4 border-t border-gray-100">
+                            <form method="post" class="inline"
+                                hx-post="{% url 'cart:remove_item' item.id %}"
+                                hx-target="body"
+                                hx-swap="outerHTMl">
+                                {% csrf_token %}
+                                <button type="submit"
+                                        class="text-sm text-gray-500 hover:text-black transition-colors duration-200 flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                    Удалить
+                                </button>
+                            </form>
+                        </div>
+            {% endfor %}
+        </div>
+
+        <!-- Итоговая информация -->
+        <div class="bg-white border border-gray-200 rounded-lg p-6 mb-8">
+            <div class="space-y-4">
+                <div class="flex justify-between items-center text-lg">
+                    <span class="text-gray-600">Товары ({{ total_items }})</span>
+                    <span class="font-medium text-black">{{ total_price }} ₽</span>
+                </div>
+                <div class="flex justify-between items-center text-lg">
+                    <span class="text-gray-600">Доставка</span>
+                    <span class="font-medium text-black">Бесплатно</span>
+                </div>
+                <div class="border-t border-gray-200 pt-4">
+                    <div class="flex justify-between items-center text-xl">
+                        <span class="font-medium text-black">Итого</span>
+                        <span class="font-semibold text-black">{{ total_price }} ₽</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Кнопки действий -->
+        <div class="flex flex-col sm:flex-row gap-4">
+            <a href="{% url 'products:catalog' %}"
+               class="flex-1 py-4 px-8 border border-gray-200 text-black text-center rounded-lg hover:border-black transition-all duration-200 font-medium">
+                Продолжить покупки
+            </a>
+            <a href="#"
+               class="flex-1 py-4 px-8 bg-black text-white text-center rounded-lg hover:bg-gray-800 transition-all duration-200 font-medium">
+                Оформить заказ
+            </a>
+        </div>
+
+        {% else %}
+        <!-- Пустая корзина -->
+        <div class="text-center py-16">
+            <div class="max-w-md mx-auto">
+                <svg class="w-24 h-24 text-gray-300 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                <h2 class="text-2xl font-medium text-black mb-4">Корзина пуста</h2>
+                <p class="text-gray-600 mb-8">Добавьте товары из каталога, чтобы сделать заказ</p>
+                <a href="{% url 'products:catalog' %}"
+                   class="inline-block py-4 px-8 bg-black text-white rounded-lg hover:bg-gray-800 transition-all duration-200 font-medium">
+                    Перейти в каталог
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

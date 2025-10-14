@@ -5,9 +5,10 @@ from django.template.response import TemplateResponse
 from django.views.generic import View
 from django.contrib import messages
 
-from products.models import ProductSize
-from .forms import AddToCartForm
-from .models import Cart, Product
+from products.models import ProductSize, Product
+from .forms import AddToCartForm, UpdateCartItemForm
+from .models import Cart, CartItem
+
 
 
 # Create your views here.
@@ -28,6 +29,18 @@ class CartMixin():
         request.session.modified = True
         return cart
 
+class CartView(CartMixin, View):
+    def get(self, request):
+        cart = self.get_cart(request)
+        
+        context = {
+            'title': 'AURA STORE',
+            'total_items': cart.total_items,
+            'cart_items': cart.items.select_related('product', 'product_size__size').order_by('-added_at'),
+            'total_price': cart.subtotal,
+        }
+        
+        return TemplateResponse(request, 'cart/cart.html', context)
 
 
 class AddToCartView(CartMixin, View):
@@ -36,8 +49,8 @@ class AddToCartView(CartMixin, View):
         cart = self.get_cart(request)
         product = get_object_or_404(Product, slug=slug)
         can_add_to_cart = True
-
-        message = f"Product {product.name} added to cart"
+        
+        message = None
         
         form = AddToCartForm(request.POST, product=product)
 
@@ -50,13 +63,13 @@ class AddToCartView(CartMixin, View):
         size_id = form.cleaned_data.get('size_id')
         if size_id:
             product_size = get_object_or_404(ProductSize, id=size_id)
+            message = f"Product {product.name} ({product_size.size}) added to cart"
+
         else:
             product_size = product.product_sizes.filter(stock__gt=0).first()
             if not product_size:
                 message = 'No sizes available'
                 can_add_to_cart = False
-
-
 
 
         quantity = form.cleaned_data.get('quantity')
@@ -84,3 +97,74 @@ class AddToCartView(CartMixin, View):
 
         messages.success(request, message)
         return redirect('products:product_detail', slug=product.slug)
+
+
+class UpdateCartItemView(CartMixin, View):
+    @transaction.atomic()
+    def post(self, request, item_id):
+        cart = self.get_cart(request)
+        message = None
+        try:
+
+            cart_item = get_object_or_404(CartItem, id=item_id)
+
+            form = UpdateCartItemForm(request.POST)
+
+            if not form.is_valid():
+                message = 'Error'
+
+            try:
+                operator = form.cleaned_data.get('+')
+            except:
+                operator = form.cleaned_data.get('-')
+
+            print(operator)
+
+
+        except CartItem.DoesNotExist:
+            message = f"Item not found"
+
+        context = {
+            'cart': cart,
+            'cart_items': cart.items.select_related('product', 'product_size').order_by('-added_at'),
+            'total_price': cart.subtotal,
+            'total_items': cart.total_items,
+            'message': message,
+        }
+
+        return TemplateResponse(request, 'cart/cart.html', context)
+    
+    
+    
+
+class RemoveCartItemView(CartMixin, View):
+    @transaction.atomic()
+    def post(self, request, item_id):
+        cart = self.get_cart(request)
+        try:
+            cart_item = get_object_or_404(CartItem, id=item_id)
+            cart_item.delete()
+
+            request.session['cart_id'] = cart.id
+            request.session.modified = True
+
+            message = f"Item {cart_item.product.name} ({cart_item.product_size.size}) deleted"
+
+
+        except CartItem.DoesNotExist:
+            message = f"Item not found"
+            
+        
+        
+        context = {
+            'cart': cart,
+            'cart_items': cart.items.select_related('product', 'product_size').order_by('-added_at'),
+            'total_price': cart.subtotal,
+            'total_items': cart.total_items,
+            'message': message,
+        }
+    
+        messages.success(request, message)    
+        return TemplateResponse(request, 'cart/cart.html', context)
+
+       
