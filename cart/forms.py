@@ -10,16 +10,3 @@ class AddToCartForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.product = product
 
-
-
-class UpdateCartItemForm(forms.ModelForm):
-    class Meta:
-        model = CartItem
-        fields = ['quantity']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.instance and self.instance.product_sizes:
-            self.fields['quantity'].validators.append(
-                forms.validators.MaxValueValidator(self.instance.product_sizes.stock)
-            )

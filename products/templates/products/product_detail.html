@@ -60,10 +60,10 @@
                     {% csrf_token %}
                     <!-- Выбор размера -->
                     <div class="space-y-4">
-                        {% if product.product_sizes.all %}
+                        {% if product.product_size.all %}
                         <h3 class="text-lg font-medium text-black">Размер</h3>
                         <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2" id="size-grid">
-                            {% for product_size in product.product_sizes.all %}
+                            {% for product_size in product.product_size.all %}
                             {% if product_size.stock != 0 %}
                             <input type="radio" name="size_id" value="{{ product_size.id }}"
                                 id="size-{{ product_size.id }}" class="hidden">
@@ -88,7 +88,7 @@
                         <div class="flex flex-col sm:flex-row gap-4">
                             <button type="submit"
                                 class="add-to-cart-btn flex-1 py-4 px-8 bg-black text-white border-none rounded-lg cursor-pointer text-base font-medium transition-all duration-200 hover:bg-gray-800 hover:-translate-y-0.5 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                                {% if product.product_sizes.all %}{% else %}disabled{% endif %}>
+                                {% if product.product_size.all %}{% else %}disabled{% endif %}>
                                 Добавить в корзину
                             </button>
                         </div>
@@ -110,6 +110,26 @@
         </div>
     </div>
 </div>
+<script>
+function changeMainImage(src, clickedElement) {
+    // Меняем главное изображение
+    const mainImg = document.getElementById('main-product-image');
+    if (mainImg) {
+        mainImg.src = src;
+    }
+
+    // Убираем класс active у всех миниатюр
+    const allThumbnails = document.querySelectorAll('.product-thumbnail');
+    allThumbnails.forEach(thumb => {
+        thumb.classList.remove('border-black');
+        thumb.classList.add('border-gray-200');
+    });
+
+    // Добавляем класс active к нажатой миниатюре
+    clickedElement.classList.remove('border-gray-200');
+    clickedElement.classList.add('border-black');
+}
+</script>
 
 <style>
     .htmx-indicator {

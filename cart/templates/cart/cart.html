@@ -1,7 +1,7 @@
 {% extends 'products/base.html' %}
 {% load static %}
 
-{% block title %}Корзина{% endblock %}
+{% block title %} {{ title }} - Корзина{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-white py-8">
@@ -46,29 +46,34 @@
 
                             <!-- Управление количеством -->
                             <div class="flex items-center gap-4">
-                                <form method="post" action="{% url 'cart:update_cart_quantity' item.id %}" class="inline">
+                                <form method="post" class="inline"
+                                hx-post="{% url 'cart:remove_cart_quantity' item.id %}"
+                                hx-target="body"
+                                hx-swap="outerHTMl">
                                     {% csrf_token %}
                                     <button type="submit"
                                             class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded hover:border-black transition-colors duration-200">
                                             <input type="hidden" name="-" value="-">
+
                                         <span class="text-lg font-light">−</span>
                                     </button>
                                 </form>
 
                                 <span class="text-lg font-medium text-black min-w-8 text-center">{{ item.quantity }}</span>
 
-                                <form method="post" action="{% url 'cart:update_cart_quantity' item.id %}" class="inline">
+                                <form method="post" class="inline"
+                                hx-post="{% url 'cart:update_cart_quantity' item.id %}"
+                                hx-target="body"
+                                hx-swap="outerHTMl">
                                     {% csrf_token %}
                                     <button type="submit"
                                             class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded hover:border-black transition-colors duration-200">
-                                            <input type="hidden" name="+" value="+">
+                                            <input type="hidden" name="quantity" value="1" required>
                                         <span class="text-lg font-light">+</span>
                                     </button>
                                 </form>
                             </div>
                         </div>
-
-
                     </div>
                 </div>
 
@@ -77,7 +82,7 @@
                 <!-- Удаление товара -->
                         <div class="mt-4 pt-4 border-t border-gray-100">
                             <form method="post" class="inline"
-                                hx-post="{% url 'cart:remove_item' item.id %}"
+                                hx-post="{% url 'cart:delete_item' item.id %}"
                                 hx-target="body"
                                 hx-swap="outerHTMl">
                                 {% csrf_token %}

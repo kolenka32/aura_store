@@ -45,8 +45,6 @@ class CatalogView(TemplateView):
                 Q(name__icontains=query) | Q(description__icontains=query)
             )
 
-
-
         context.update({
             'categories': categories,
             'products': products,

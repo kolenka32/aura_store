@@ -6,7 +6,7 @@ from django.views.generic import View
 from django.contrib import messages
 
 from products.models import ProductSize, Product
-from .forms import AddToCartForm, UpdateCartItemForm
+from .forms import AddToCartForm
 from .models import Cart, CartItem
 
 
@@ -35,9 +35,10 @@ class CartView(CartMixin, View):
         
         context = {
             'title': 'AURA STORE',
-            'total_items': cart.total_items,
+            'cart': cart,
             'cart_items': cart.items.select_related('product', 'product_size__size').order_by('-added_at'),
             'total_price': cart.subtotal,
+            'total_items': cart.total_items,
         }
         
         return TemplateResponse(request, 'cart/cart.html', context)
@@ -73,7 +74,7 @@ class AddToCartView(CartMixin, View):
 
 
         quantity = form.cleaned_data.get('quantity')
-        if product_size.stock < quantity:
+        if quantity > product_size.stock:
             message = f"Only {product_size.stock} sizes available"
             can_add_to_cart = False
 
@@ -102,69 +103,81 @@ class AddToCartView(CartMixin, View):
 class UpdateCartItemView(CartMixin, View):
     @transaction.atomic()
     def post(self, request, item_id):
-        cart = self.get_cart(request)
+
         message = None
         try:
-
+            cart = self.get_cart(request)
             cart_item = get_object_or_404(CartItem, id=item_id)
 
-            form = UpdateCartItemForm(request.POST)
+            if cart_item.quantity >= cart_item.product_size.stock:
+                message = f"Only {cart_item.product_size.stock} items in stock available"
 
-            if not form.is_valid():
-                message = 'Error'
+            else:
+                cart_item.quantity += 1
+                cart_item.save()
 
-            try:
-                operator = form.cleaned_data.get('+')
-            except:
-                operator = form.cleaned_data.get('-')
-
-            print(operator)
-
+                request.session['cart_id'] = cart.id
+                request.session.modified = True
 
         except CartItem.DoesNotExist:
-            message = f"Item not found"
+            message = 'Item does not exists'
 
-        context = {
-            'cart': cart,
-            'cart_items': cart.items.select_related('product', 'product_size').order_by('-added_at'),
-            'total_price': cart.subtotal,
-            'total_items': cart.total_items,
-            'message': message,
-        }
 
-        return TemplateResponse(request, 'cart/cart.html', context)
-    
-    
-    
+        if message is not None:
+            messages.success(request, message)
+        return redirect('cart:cart')
+
+
 
 class RemoveCartItemView(CartMixin, View):
     @transaction.atomic()
     def post(self, request, item_id):
-        cart = self.get_cart(request)
+        message = None
         try:
+            cart = self.get_cart(request)
             cart_item = get_object_or_404(CartItem, id=item_id)
-            cart_item.delete()
+
+            if cart_item.quantity == 1:
+                cart_item.delete()
+                message = f"Product {cart_item.product.name} deleted"
+
+            elif cart_item.quantity > 1:
+                cart_item.quantity -= 1
+                cart_item.save()
+
 
             request.session['cart_id'] = cart.id
             request.session.modified = True
 
-            message = f"Item {cart_item.product.name} ({cart_item.product_size.size}) deleted"
-
 
         except CartItem.DoesNotExist:
-            message = f"Item not found"
-            
-        
-        
-        context = {
-            'cart': cart,
-            'cart_items': cart.items.select_related('product', 'product_size').order_by('-added_at'),
-            'total_price': cart.subtotal,
-            'total_items': cart.total_items,
-            'message': message,
-        }
-    
-        messages.success(request, message)    
-        return TemplateResponse(request, 'cart/cart.html', context)
+            message = 'Item does not exists'
 
+        if message is not None:
+            messages.success(request, message)
+
+        return redirect('cart:cart')
+
+
+class DeleteCartItemView(CartMixin, View):
+    @transaction.atomic()
+    def post(self, request, item_id):
+        try:
+            cart = self.get_cart(request)
+            cart_item = get_object_or_404(CartItem, id=item_id)
+
+            cart_item.delete()
+            message = f"Product {cart_item.product.name} deleted"
+
+            request.session['cart_id'] = cart.id
+            request.session.modified = True
+
+        except CartItem.DoesNotExist:
+            message = 'error'
+
+
+        if message != 'error':
+            messages.success(request, message)
+
+        return redirect('cart:cart')
        
