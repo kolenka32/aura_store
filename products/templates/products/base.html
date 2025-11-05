@@ -100,7 +100,7 @@
                     <!-- Account -->
                     <a href="#" 
                        class="px-4 py-2 text-sm font-medium uppercase text-black no-underline border border-transparent rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all duration-200"
-                       hx-get="/profile" 
+                       hx-get="{% url 'users:profile' %}"
                        hx-target="body" 
                        hx-swap="outerHTML" 
                        hx-push-url="true">

@@ -1,3 +1,47 @@
+from django.contrib.auth.models import BaseUserManager, AbstractUser
 from django.db import models
+from django.utils.html import strip_tags
+
 
 # Create your models here.
+class CustomUserManager(BaseUserManager):
+    def create_user(self, email, first_name, last_name, password=None, **extra_fields):
+        if not email:
+            email = self.normalize_email(email)
+            user = self.model(email=email, first_name=first_name, last_name=last_name, **extra_fields)
+
+            user.get_password(password)
+            user.save(using=self._db)
+            
+
+    def create_superuser(self, email, first_name, last_name, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
+        return self.create_user(email, first_name, last_name, password, **extra_fields)
+
+
+class CustomUser(AbstractUser):
+    email = models.EmailField(max_length=255, unique=True)
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    company = models.CharField(max_length=255, blank=True, null=True)
+    address1 = models.CharField(max_length=255, blank=True, null=True)
+    address2 = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=255, blank=True, null=True)
+    country = models.CharField(max_length=255, blank=True, null=True)
+    province = models.CharField(max_length=255, blank=True, null=True)
+    postal_code = models.CharField(max_length=255, blank=True, null=True)
+    phone = models.CharField(max_length=255, unique=True, blank=True, null=True)
+
+    def clean(self):
+        for field in ['company', 'address1', 'address2', 'city', 'country', 'province', 'postal_code', 'phone']:
+            print(field)
+            value = getattr(self, field)
+            if value:
+                setattr(self, field, strip_tags(value))
