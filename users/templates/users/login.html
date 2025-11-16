@@ -117,7 +117,10 @@
                 <div class="text-center">
                     <p class="text-sm text-gray-600">
                         Еще нет аккаунта?
-                        <a href="{% url 'users:register' %}" class="font-medium text-gray-900 hover:text-gray-700 transition duration-200 ml-1">
+                        <a href="{% url 'users:register' %}" class="font-medium text-gray-900 hover:text-gray-700 transition duration-200 ml-1"
+                            hx-get="{% url 'users:register' %}"
+                            hx-target="body"
+                            hx-push-url="true">
                             Зарегистрироваться
                         </a>
                     </p>

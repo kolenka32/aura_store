@@ -1,4 +1,7 @@
+{% extends 'products/base.html' %}
 
+
+{% block content %}
 <div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
         <!-- Заголовок -->
@@ -122,7 +125,10 @@
                 <div class="text-center">
                     <p class="text-sm text-gray-600">
                         Уже есть аккаунт?
-                        <a href="#" class="font-medium text-gray-900 hover:text-gray-700 transition duration-200">
+                        <a href="{% url 'users:login' %}" class="font-medium text-gray-900 hover:text-gray-700 transition duration-200"
+                            hx-get="{% url 'users:login' %}"
+                            hx-target="body"
+                            hx-push-url="true">
                             Войти
                         </a>
 
@@ -158,3 +164,4 @@
         to { opacity: 1; transform: translateY(0); }
     }
 </style>
+{% endblock %}

@@ -38,6 +38,7 @@ class CustomUser(AbstractUser):
     province = models.CharField(max_length=255, blank=True, null=True)
     postal_code = models.CharField(max_length=255, blank=True, null=True)
     phone = models.CharField(max_length=255, unique=True, blank=True, null=True)
+    image = models.ImageField(upload_to='users/avatars/', blank=True, null=True)
 
     def clean(self):
         for field in ['company', 'address1', 'address2', 'city', 'country', 'province', 'postal_code', 'phone']:
