@@ -57,10 +57,8 @@ def register(request):
         form = CustomUserCreationForm(data=request.POST)
         if form.is_valid():
             form.save()
-            return redirect('users:login')
-        else:
-            messages.error(request, 'Es un error')
-            print(form.errors)
+            # login(request, user, backend='django.contrib.backends.ModelBackend')
+            return redirect('products:index')
     else:
         form = CustomUserCreationForm()
 
