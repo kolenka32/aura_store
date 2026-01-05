@@ -39,3 +39,8 @@ class ProcuctAdmin(admin.ModelAdmin):
     list_filter = ['category', 'color']
     readonly_fields = ['created_at', 'updated_at']
     inlines = [ProductSizeInline, ProductImageInline]
+
+
+@admin.register(ProductSize)
+class ProductSizeAdmin(admin.ModelAdmin):
+    search_fields = ('name', 'product__name')
