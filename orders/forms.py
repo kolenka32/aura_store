@@ -4,11 +4,11 @@ from django.utils.html import strip_tags
 
 
 class OrderForm(forms.Form):
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    email = models.EmailField()
-    phone = models.CharField(max_length=100)
-    address = models.CharField(max_length=100)
+    first_name = forms.CharField(max_length=100)
+    last_name = forms.CharField(max_length=100)
+    email = forms.EmailField()
+    phone = forms.CharField(max_length=100)
+    address = forms.CharField(max_length=100)
 
     def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)

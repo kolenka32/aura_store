@@ -143,7 +143,7 @@ class CustomUserUpdateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.pk:
-            self.fields['address'].initial = self.instance.address1
+            self.fields['address'].initial = self.instance.address
 
 
     def clean_email(self):

@@ -34,7 +34,7 @@ class CartView(CartMixin, View):
         cart = self.get_cart(request)
         
         context = {
-            'title': 'AURA STORE',
+            'title': 'AURA STORE - Корзина',
             'cart': cart,
             'cart_items': cart.items.select_related('product', 'product_size__size').order_by('-added_at'),
             'total_price': cart.subtotal,
