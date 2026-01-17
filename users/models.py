@@ -40,7 +40,7 @@ class CustomUser(AbstractUser):
     image = models.ImageField(upload_to='users/avatars/', blank=True, null=True)
 
     def clean(self):
-        for field in ['company', 'address1', 'address2', 'city', 'country', 'province', 'postal_code', 'phone']:
+        for field in ['company', 'address', 'city', 'country', 'province', 'postal_code', 'phone']:
             print(field)
             value = getattr(self, field)
             if value:

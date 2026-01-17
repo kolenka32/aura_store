@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model, authenticate
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.core.exceptions import ValidationError
 from django.template.context_processors import request
 
 User = get_user_model()
@@ -38,52 +39,80 @@ class CustomUserLoginForm(AuthenticationForm):
 
 
 
-class CustomUserCreationForm(forms.ModelForm):
-    email = forms.EmailField(label='Почта', widget=forms.EmailInput(attrs={}))
-    first_name = forms.CharField(label = 'Имя')
-    last_name = forms.CharField(label='Фамилия')
-    phone = forms.CharField(label='Телефон')
-    password1 = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={}))
-    password2 = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={}))
 
+class CustomUserCreationForm(UserCreationForm):
+    email = forms.EmailField(label='Почта', widget=forms.EmailInput(attrs={
+        'class': 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition duration-200',
+        'id': 'email',
+        'name': 'email',
+        'type': 'email',
+        'required': True,
+        'placeholder': 'your@email.com',
+    }))
+    first_name = forms.CharField(label='Имя', widget=forms.TextInput(attrs={
+        'class': 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition duration-200',
+        'id': 'first_name',
+        'name': 'first_name',
+        'type': 'text',
+        'required': True,
+        'placeholder': 'Имя...'
+    }))
+    last_name = forms.CharField(label='Фамилия', widget=forms.TextInput(attrs={
+        'class': 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition duration-200',
+        'id': 'last_name',
+        'name': 'last_name',
+        'type': 'text',
+        'required': True,
+        'placeholder': 'Фамилия...'
+    }))
+    phone = forms.CharField(label='Телефон', widget=forms.TextInput(attrs={
+        'class': 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition duration-200',
+        'id': 'phone',
+        'name': 'phone',
+        'type': 'tel',
+        'required': True,
+        'placeholder': '+7 (123) 456-78-90'
+    }))
+    password1 = forms.CharField(
+        label='Пароль',
+        widget=forms.PasswordInput(attrs={
+            'class': 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm '
+                     'focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 '
+                     'transition duration-200',
+            'placeholder': 'Пароль',
+        })
+    )
+
+    password2 = forms.CharField(
+        label='Подтверждение пароля',
+        widget=forms.PasswordInput(attrs={
+            'class': 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm '
+                     'focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 '
+                     'transition duration-200',
+            'placeholder': 'Повторите пароль',
+        })
+    )
 
     class Meta:
         model = User
-        fields = ('email', 'first_name', 'last_name', 'phone', 'password1', 'password2')
+        fields = (
+            'email',
+            'first_name',
+            'last_name',
+            'phone',
+            'password1',
+            'password2',
+        )
+
+
 
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        if email and User.objects.filter(email=email).exclude().exists():
-            raise forms.ValidationError('Email address already in use.')
+        if email and User.objects.filter(email=email).exists():
+            raise ValidationError('Email уже используется')
         return email
 
-
-    def clean_password1(self):
-        password1 = self.cleaned_data.get('password1')
-        if len(password1) < 8:
-            raise forms.ValidationError('Password must be at least 8 characters long.')
-
-        return password1
-
-
-    def clean_password2(self):
-        password1 = self.cleaned_data.get('password1')
-        password2 = self.cleaned_data.get('password2')
-
-        if password1 != password2:
-            raise forms.ValidationError('Passwords do not match.')
-        return password2
-
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.username = self.cleaned_data['email']
-        user.set_password(self.cleaned_data['password1'])
-
-        if commit:
-            user.save()
-        return user
 
 
 

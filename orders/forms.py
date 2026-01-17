@@ -4,7 +4,15 @@ from django.utils.html import strip_tags
 
 
 class OrderForm(forms.Form):
-    first_name = forms.CharField(max_length=100)
+    first_name = forms.CharField(max_length=100, widget=forms.TextInput(attrs={
+        'class': "w-full px-4 py-3 rounded-none border border-gray-400 bg-white text-gray-900 focus:outline-none focus:border-gray-800 focus:ring-0 transition-colors placeholder:text-gray-500",
+        'placeholder': 'Имя...',
+        'type': 'text',
+        'name': 'first_name',
+        'required': True,
+
+
+    }))
     last_name = forms.CharField(max_length=100)
     email = forms.EmailField()
     phone = forms.CharField(max_length=100)

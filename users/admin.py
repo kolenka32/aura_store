@@ -12,7 +12,7 @@ class CustomUserAdmin(UserAdmin):
     fieldsets = [
         (None, {'fields': ('email', 'password')}),
         ('Personal info', {
-            'fields': ('image', 'first_name', 'last_name', 'company', 'address1', 'address2', 'city', 'country', 'province',
+            'fields': ('image', 'first_name', 'last_name', 'company', 'address', 'city', 'country', 'province',
                        'postal_code', 'phone')
         }),
         ('Permissions', {

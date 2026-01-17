@@ -9,32 +9,27 @@
 {% endblock %}
 
 {% block content %}
-<body class="bg-gray-50 min-h-screen">
+<div class="bg-gray-50 min-h-screen">
     <div class="container mx-auto px-4 py-12">
         <h1 class="text-3xl font-light text-gray-900 tracking-tight text-center mb-10">ФОРМА ЗАКАЗА</h1>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 max-w-7xl mx-auto">
             <!-- Левая колонка - Форма -->
             <div class="lg:col-span-2">
-                <div class="bg-white p-8 rounded-none shadow-sm border border-gray-200">
-                    <h2 class="text-xl font-medium text-gray-900 mb-6 tracking-wide uppercase border-b border-gray-300 pb-3">Данные клиента</h2>
+                <form id="orderForm" class="space-y-8" method="post" action="{% url 'orders:checkout' %}">
+                    {% csrf_token %}
 
-                    <form id="orderForm" class="space-y-8" method="post">
-                        {% csrf_token %}
+
+
+                    <div class="bg-white p-8 rounded-none shadow-sm border border-gray-200">
+                        <h2 class="text-xl font-medium text-gray-900 mb-6 tracking-wide uppercase border-b border-gray-300 pb-3">Данные клиента</h2>
 
                         <!-- Имя и Фамилия в строку -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
                             <div class="space-y-2">
-                                <label class="block text-gray-900 text-sm font-medium tracking-wide uppercase">Имя</label>
-                                <input
-                                    type="text"
-                                    name="first_name"
-                                    required
-                                    class="w-full px-4 py-3 rounded-none border border-gray-400 bg-white text-gray-900
-                                           focus:outline-none focus:border-gray-800 focus:ring-0 transition-colors
-                                           placeholder:text-gray-500"
-                                    placeholder="Иван"
-                                >
+                                <label for="first_name" class="block text-gray-900 text-sm font-medium tracking-wide uppercase">Имя</label>
+                                {{ form.first_name }}
                             </div>
 
                             <div class="space-y-2">
@@ -92,9 +87,11 @@
                                 placeholder="Город, улица, дом, квартира"
                             ></textarea>
                         </div>
+                    </div>
 
-                    </form>
-                </div>
+
+
+                </form>
             </div>
 
             <!-- Правая колонка - Список товаров и кнопка подтверждения -->
@@ -112,7 +109,13 @@
                             <!-- Товар 1 -->
                             <div class="flex items-start gap-4 p-3 border border-gray-200 hover:border-gray-300 transition-colors">
                                 <div class="w-16 h-16 bg-gray-100 flex items-center justify-center border border-gray-300">
-                                    <img src="{{ item.product.main_image.url }}">
+                                    <div class="w-20 h-20 bg-gray-100 border border-gray-300 overflow-hidden flex-shrink-0">
+                                    <img
+                                        src="{{ item.product.main_image.url }}"
+                                        alt="{{ item.product.name }}"
+                                        class="w-full h-full object-cover"
+                                    >
+                                </div>
                                 </div>
                                 <div class="flex-1">
                                     <h3 class="font-medium text-gray-900 text-sm">{{ item.product.name }} ({{ item.product_size.size }})</h3>
@@ -127,6 +130,7 @@
                                 </div>
                             </div>
                             {% endfor %}
+                        </div>
 
                         <!-- Итоги -->
                         <div class="p-6 border-t border-gray-300 space-y-3">
@@ -147,6 +151,7 @@
                     </div>
 
                     <!-- Кнопка подтверждения заказа - прямо под списком товаров -->
+                    <!-- Обратите внимание: кнопка теперь находится внутри формы через form="orderForm" -->
                     <div class="mb-6">
                         <button
                             type="submit"
@@ -188,5 +193,5 @@
             </div>
         </div>
     </div>
-</body>
+</div>
 {% endblock %}
