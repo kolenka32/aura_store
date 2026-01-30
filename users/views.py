@@ -1,7 +1,8 @@
-from django.contrib.auth import get_user_model, logout
+from django.contrib.auth import get_user_model, logout, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
+from django.template.response import TemplateResponse
 from django.views import View
 
 from users.forms import CustomUserUpdateForm, CustomUserLoginForm
@@ -9,7 +10,13 @@ from users.forms import CustomUserUpdateForm, CustomUserLoginForm
 
 # Create your views here.
 
-def login(request):
+def register(request):
+    if request.method == 'POST':
+        form =
+    return render(request, 'users/register.html')
+
+
+def login_view(request):
     if request.method == 'POST':
         form = CustomUserLoginForm(request=request, data=request.POST)
         if form.is_valid():
@@ -20,18 +27,13 @@ def login(request):
             print(form.errors)
     else:
         form = CustomUserLoginForm()
-    return render(request, 'users/login.html', {'form': form})
+    return TemplateResponse(request, 'users/login.html', {'form': form})
 
-def register(request):
-    ...
+
 
 def logout_view(request):
     logout(request)
     return redirect('products:index')
-    # return render(request, 'users/logout.html')
-
-def register(request):
-    return render(request, 'users/register.html')
 
 
 @login_required(login_url='/users/login/')

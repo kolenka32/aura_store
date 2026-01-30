@@ -27,20 +27,18 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractUser):
+
+    USERNAME_FIELD = 'email'
+
     email = models.EmailField(max_length=255, unique=True)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     company = models.CharField(max_length=255, blank=True, null=True)
-    address1 = models.CharField(max_length=255, blank=True, null=True)
-    address2 = models.CharField(max_length=255, blank=True, null=True)
-    city = models.CharField(max_length=255, blank=True, null=True)
-    country = models.CharField(max_length=255, blank=True, null=True)
-    province = models.CharField(max_length=255, blank=True, null=True)
-    postal_code = models.CharField(max_length=255, blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
     phone = models.CharField(max_length=255, unique=True, blank=True, null=True)
 
     def clean(self):
-        for field in ['company', 'address1', 'address2', 'city', 'country', 'province', 'postal_code', 'phone']:
+        for field in ['company', 'address', 'phone']:
             print(field)
             value = getattr(self, field)
             if value:

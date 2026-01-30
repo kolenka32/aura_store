@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'products',
     'cart',
     'users',
+    'orders',
+    'payment',
 ]
 
 MIDDLEWARE = [
@@ -150,3 +152,5 @@ SESSION_SAVE_EVERY_REQUEST= True
 
 
 AUTH_USER_MODEL = 'users.CustomUser'
+
+# STRIPE_SECRET_KEY =
