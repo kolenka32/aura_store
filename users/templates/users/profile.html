@@ -1,254 +1,193 @@
 {% extends 'products/base.html' %}
 
-{% block title %}{{ title }}{% endblock %}
-
 {% block content %}
-<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-3xl mx-auto">
-        <!-- Заголовок -->
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">Профиль пользователя</h1>
-            <p class="mt-2 text-gray-600">Управление вашими данными</p>
+<div class="bg-white min-h-screen">
+    <!-- Навигация -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Заголовок профиля -->
+        <div class="mb-10 animate-fade-in">
+            <h1 class="text-3xl font-light text-black tracking-tight mb-2">Профиль пользователя</h1>
+            <p class="text-gray-500">Управление личной информацией и настройками</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Боковая панель -->
-            <div class="lg:col-span-1">
-                <div class="bg-white shadow rounded-lg p-6">
-                    <!-- Аватар -->
-                    <div class="text-center mb-6">
-                        <div class="mx-auto h-24 w-24 rounded-full bg-gray-200 flex items-center justify-center mb-4">
-                            <span class="text-2xl font-bold text-gray-600">
-                                {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
-                            </span>
+            <!-- Левая колонка - Аватар и навигация -->
+            <div class="lg:col-span-1 space-y-8">
+                <!-- Аватар -->
+                <div class="bg-white border border-gray-200 p-6">
+                    <div class="flex flex-col items-center">
+                        <div class="w-32 h-32 rounded-full border-4 border-gray-100 mb-4 overflow-hidden">
+                            <div class="w-full h-full bg-gray-50 flex items-center justify-center">
+                                <span class="text-4xl text-gray-400 font-light">
+                                    {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+                                </span>
+                            </div>
                         </div>
-                        <h2 class="text-xl font-semibold text-gray-900">
+                        <h2 class="text-xl font-normal text-black mb-1">
                             {{ user.first_name }} {{ user.last_name }}
                         </h2>
-                        <p class="text-gray-600">{{ user.email }}</p>
+                        <p class="text-gray-500 text-sm mb-4">{{ user.email }}</p>
                     </div>
+                </div>
 
-                    <!-- Навигация -->
-                    <nav class="space-y-2">
-                        <a href="#" class="flex items-center px-3 py-2 text-gray-900 bg-gray-100 rounded-md font-medium">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                            </svg>
+                <!-- Навигация -->
+                <div class="bg-white border border-gray-200 p-6">
+                    <h3 class="font-medium text-black mb-4">Навигация</h3>
+                    <div class="space-y-2">
+                        <a
+                            hx-get="{% url 'users:profile' %}"
+                            hx-target="body"
+                            hx-push-url="true"
+                            class="block w-full px-4 py-3 bg-black text-white font-normal transition-colors text-center"
+                        >
                             Основная информация
                         </a>
-                        <a href="#" class="flex items-center px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md font-medium">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                            </svg>
-                            Безопасность
+                        <a
+                            hx-get="{% url 'users:orders' %}"
+                            hx-target="body"
+                            hx-push-url="true"
+                            class="block w-full px-4 py-3 text-gray-700 font-normal hover:bg-gray-50 transition-colors text-center border border-gray-300"
+                        >
+                            Мои заказы
                         </a>
-                        <a href="#" class="flex items-center px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md font-medium">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                            </svg>
-                            Заказы
-                        </a>
-                    </nav>
+                        <div class="pt-4 border-t border-gray-100">
+                            <form method="POST" action="{% url 'users:logout' %}">
+                                {% csrf_token %}
+                                <button
+                                    type="submit"
+                                    class="block w-full px-4 py-3 text-gray-700 font-normal hover:bg-gray-50 transition-colors border border-gray-300"
+                                >
+                                    Выйти из аккаунта
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Основной контент -->
+            <!-- Правая колонка - Форма редактирования -->
             <div class="lg:col-span-2">
-                <div class="bg-white shadow rounded-lg">
-                    <!-- Заголовок формы -->
-                    <div class="px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-medium text-gray-900">Основная информация</h3>
-                        <p class="mt-1 text-sm text-gray-600">Обновите ваши личные данные</p>
-                    </div>
+                <form method="POST" class="space-y-8">
+                    {% csrf_token %}
 
-                    <!-- Форма профиля -->
-                    <form class="p-6 space-y-6" method="POST">
-                        {% csrf_token %}
+                    <!-- Основная информация -->
+                    <div class="bg-white border border-gray-200 p-6">
+                        <h3 class="font-medium text-black mb-6 pb-2 border-b border-gray-100">Основная информация</h3>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Имя -->
                             <div>
-                                <label for="first_name" class="block text-sm font-medium text-gray-700">Имя</label>
+                                <label for="first_name" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Имя
+                                </label>
                                 <input
+                                    type="text"
                                     id="first_name"
                                     name="first_name"
-                                    type="text"
                                     value="{{ user.first_name }}"
-                                    required
-                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition duration-200"
-                                    placeholder="Иван"
+                                    class="w-full px-3 py-2 border border-gray-300 bg-white text-black placeholder-gray-400 focus:border-black transition-colors"
+                                    placeholder="Введите имя"
                                 >
                             </div>
 
                             <!-- Фамилия -->
                             <div>
-                                <label for="last_name" class="block text-sm font-medium text-gray-700">Фамилия</label>
+                                <label for="last_name" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Фамилия
+                                </label>
                                 <input
+                                    type="text"
                                     id="last_name"
                                     name="last_name"
-                                    type="text"
                                     value="{{ user.last_name }}"
-                                    required
-                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition duration-200"
-                                    placeholder="Иванов"
+                                    class="w-full px-3 py-2 border border-gray-300 bg-white text-black placeholder-gray-400 focus:border-black transition-colors"
+                                    placeholder="Введите фамилию"
                                 >
                             </div>
 
                             <!-- Email -->
                             <div class="md:col-span-2">
-                                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Email
+                                </label>
                                 <input
+                                    type="email"
                                     id="email"
                                     name="email"
-                                    type="email"
                                     value="{{ user.email }}"
                                     required
-                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition duration-200"
-                                    placeholder="your@email.com"
+                                    class="w-full px-3 py-2 border border-gray-300 bg-white text-black placeholder-gray-400 focus:border-black transition-colors"
+                                    placeholder="example@email.com"
                                 >
                             </div>
 
                             <!-- Телефон -->
-                            <div class="md:col-span-2">
-                                <label for="phone" class="block text-sm font-medium text-gray-700">Телефон</label>
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Телефон
+                                </label>
                                 <input
+                                    type="tel"
                                     id="phone"
                                     name="phone"
-                                    type="tel"
-                                    value="{{ user.profile.phone|default:'' }}"
-                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition duration-200"
-                                    placeholder="+7 (999) 999-99-99"
+                                    value="{{ user.phone|default:'' }}"
+                                    class="w-full px-3 py-2 border border-gray-300 bg-white text-black placeholder-gray-400 focus:border-black transition-colors"
+                                    placeholder="+7 (999) 000-00-00"
                                 >
                             </div>
 
                             <!-- Адрес -->
                             <div class="md:col-span-2">
-                                <label for="address" class="block text-sm font-medium text-gray-700">Адрес</label>
+                                <label for="address" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Адрес
+                                </label>
                                 <textarea
                                     id="address"
                                     name="address"
-                                    rows="3"
-                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition duration-200"
+                                    rows="2"
+                                    class="w-full px-3 py-2 border border-gray-300 bg-white text-black placeholder-gray-400 focus:border-black transition-colors resize-none"
                                     placeholder="Введите ваш адрес"
-                                >{{ user.profile.address|default:'' }}</textarea>
-                            </div>
-                        </div>
-
-                        <!-- Ошибки формы -->
-                        {% if form.errors %}
-                        <div class="bg-red-50 border border-red-200 rounded-md p-4">
-                            <ul class="text-sm text-red-600 space-y-1">
-                                {% for field in form %}
-                                    {% for error in field.errors %}
-                                        <li>{{ error }}</li>
-                                    {% endfor %}
-                                {% endfor %}
-                                {% for error in form.non_field_errors %}
-                                    <li>{{ error }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        {% endif %}
-
-                        <!-- Сообщения об успехе -->
-                        {% if messages %}
-                        <div class="bg-green-50 border border-green-200 rounded-md p-4">
-                            <ul class="text-sm text-green-600 space-y-1">
-                                {% for message in messages %}
-                                    <li>{{ message }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        {% endif %}
-
-                        <!-- Кнопки -->
-                        <div class="flex justify-end space-x-4 pt-6">
-                            <button
-                                type="button"
-                                class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-200"
-                            >
-                                Отмена
-                            </button>
-                            <button
-                                type="submit"
-                                class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-200"
-                            >
-                                Сохранить изменения
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Дополнительные карточки -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                    <!-- Статистика -->
-                    <div class="bg-white shadow rounded-lg p-6">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Статистика</h3>
-                        <div class="space-y-3">
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Всего заказов</span>
-                                <span class="font-medium">12</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Выполнено</span>
-                                <span class="font-medium">10</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">В обработке</span>
-                                <span class="font-medium">2</span>
+                                >{{ user.address|default:'' }}</textarea>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Быстрые действия -->
-                    <div class="bg-white shadow rounded-lg p-6">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Быстрые действия</h3>
-                        <div class="space-y-3">
-                            <a href="#" class="flex items-center text-gray-600 hover:text-gray-900 group">
-                                <svg class="w-5 h-5 mr-3 group-hover:text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                </svg>
-                                История заказов
-                            </a>
-                            <a href="#" class="flex items-center text-gray-600 hover:text-gray-900 group">
-                                <svg class="w-5 h-5 mr-3 group-hover:text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                                </svg>
-                                Сменить пароль
-                            </a>
-                            <a href="{% url 'users:logout' %}" class="flex items-center text-gray-600 hover:text-gray-900 group">
-                                <svg class="w-5 h-5 mr-3 group-hover:text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                                </svg>
-                                Выйти из аккаунта
-                            </a>
+                    <!-- Сообщения об ошибках/успехе -->
+                    {% if messages %}
+                        <div class="space-y-2">
+                            {% for message in messages %}
+                                <div class="p-3 border {% if message.tags == 'success' %}border-gray-300 bg-gray-50{% else %}border-gray-300 bg-white{% endif %}">
+                                    <p class="text-sm {% if message.tags == 'success' %}text-black{% else %}text-gray-700{% endif %}">
+                                        {{ message }}
+                                    </p>
+                                </div>
+                            {% endfor %}
                         </div>
+                    {% endif %}
+
+                    {% if form.errors %}
+                        <div class="p-3 border border-gray-300 bg-white">
+                            <p class="text-sm text-gray-700">
+                                <svg class="inline-block h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Пожалуйста, исправьте ошибки в форме
+                            </p>
+                        </div>
+                    {% endif %}
+
+                    <!-- Кнопка сохранения -->
+                    <div class="flex justify-end pt-6 border-t border-gray-200">
+                        <button
+                            type="submit"
+                            class="px-8 py-3 bg-black text-white font-normal hover:bg-gray-800 transition-colors"
+                        >
+                            Сохранить изменения
+                        </button>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
-
-<style>
-    /* Дополнительные стили для улучшения UX */
-    input:focus, textarea:focus {
-        box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Плавное появление ошибок и сообщений */
-    .bg-red-50, .bg-green-50 {
-        animation: fadeIn 0.3s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Стили для аватара */
-    .rounded-full {
-        border: 3px solid #f3f4f6;
-    }
-</style>
 {% endblock %}

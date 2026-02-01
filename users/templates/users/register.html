@@ -1,160 +1,268 @@
+{% extends 'products/base.html' %}
 
-<div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+{% block content %}
+<style>
+    .minimal-input {
+        border: 1px solid #d1d5db;
+        border-radius: 3px;
+        transition: all 0.2s ease;
+    }
+    .minimal-input:focus {
+        border-color: #000;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+        outline: none;
+    }
+    .error-field {
+        border-color: #dc2626 !important;
+    }
+    .error-message {
+        color: #dc2626;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    .error-icon {
+        width: 1rem;
+        height: 1rem;
+        flex-shrink: 0;
+    }
+</style>
+
+<div class="bg-white">
+    <div class="min-h-screen flex flex-col items-center justify-center p-6">
         <!-- Заголовок -->
-        <div class="text-center">
-            <h1 class="text-3xl font-bold text-gray-900">Создать аккаунт</h1>
-            <p class="mt-2 text-gray-600">Заполните форму для регистрации</p>
+        <div class="mb-10 text-center">
+            <h1 class="text-3xl font-light text-black tracking-tight mb-2">РЕГИСТРАЦИЯ</h1>
+            <p class="text-gray-500 text-sm">ЗАПОЛНИТЕ ФОРМУ ДЛЯ СОЗДАНИЯ АККАУНТА</p>
         </div>
 
-        <!-- Форма регистрации -->
-        <div class="mt-8 bg-white py-8 px-6 shadow rounded-lg sm:px-10">
-            <form class="space-y-6" method="POST">
-                {% csrf_token %}
+        <!-- Форма -->
+        <form method="POST" class="w-full max-w-md space-y-8" action="{% url 'users:register' %}">
+            {% csrf_token %}
 
-                <div class="space-y-4">
-                    <!-- Email -->
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                        <input
-                            id="email"
-                            name="email"
-                            type="email"
-                            required
-                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition duration-200"
-                            placeholder="your@email.com"
-                        >
-                    </div>
-
-                    <!-- Имя и Фамилия в одной строке -->
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="first_name" class="block text-sm font-medium text-gray-700">Имя</label>
-                            <input
-                                id="first_name"
-                                name="first_name"
-                                type="text"
-                                required
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition duration-200"
-                                placeholder="Иван"
-                            >
-                        </div>
-                        <div>
-                            <label for="last_name" class="block text-sm font-medium text-gray-700">Фамилия</label>
-                            <input
-                                id="last_name"
-                                name="last_name"
-                                type="text"
-                                required
-                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition duration-200"
-                                placeholder="Иванов"
-                            >
-                        </div>
-                    </div>
-
-                    <!-- Телефон -->
-                    <div>
-                        <label for="phone" class="block text-sm font-medium text-gray-700">Телефон</label>
-                        <input
-                            id="phone"
-                            name="phone"
-                            type="tel"
-                            required
-                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition duration-200"
-                            placeholder="+7 (999) 999-99-99"
-                        >
-                    </div>
-
-                    <!-- Пароль -->
-                    <div>
-                        <label for="password1" class="block text-sm font-medium text-gray-700">Пароль</label>
-                        <input
-                            id="password1"
-                            name="password1"
-                            type="password"
-                            required
-                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition duration-200"
-                            placeholder="••••••••"
-                        >
-                    </div>
-
-                    <!-- Подтверждение пароля -->
-                    <div>
-                        <label for="password2" class="block text-sm font-medium text-gray-700">Подтверждение пароля</label>
-                        <input
-                            id="password2"
-                            name="password2"
-                            type="password"
-                            required
-                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition duration-200"
-                            placeholder="••••••••"
-                        >
-                    </div>
-                </div>
-
-                <!-- Ошибки формы -->
-                {% if form.errors %}
-                <div class="bg-red-50 border border-red-200 rounded-md p-4">
-                    <ul class="text-sm text-red-600 space-y-1">
-                        {% for field in form %}
-                            {% for error in field.errors %}
-                                <li>{{ error }}</li>
-                            {% endfor %}
-                        {% endfor %}
-                        {% for error in form.non_field_errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endif %}
-
-                <!-- Кнопка регистрации -->
-                <div>
-                    <button
-                        type="submit"
-                        class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-200"
+            <div class="space-y-5">
+                <!-- Email -->
+                <div class="space-y-1">
+                    <label class="block text-sm text-gray-700">
+                        Email
+                    </label>
+                    <input
+                        type="email"
+                        name="email"
+                        required
+                        class="w-full minimal-input px-3 py-2.5 {% if form.email.errors %}error-field{% endif %}"
+                        placeholder="Ваш email"
+                        autocomplete="email"
+                        autofocus
+                        {% if form.email.value %}
+                            value="{{ form.email.value }}"
+                        {% endif %}
                     >
-                        Зарегистрироваться
-                    </button>
+                    {% if form.email.errors %}
+                    <div class="error-message">
+                        <svg class="error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {{ form.email.errors.0 }}
+                    </div>
+                    {% endif %}
                 </div>
 
-                <!-- Ссылка на вход -->
-                <div class="text-center">
-                    <p class="text-sm text-gray-600">
-                        Уже есть аккаунт?
-                        <a href="#" class="font-medium text-gray-900 hover:text-gray-700 transition duration-200">
-                            Войти
-                        </a>
-
-                    </p>
-                    <p>или</p>
-                    <a class="font-medium text-gray-900 hover:text-gray-700 transition duration-200"
-                        href="{% url 'products:index' %}"
-                        hx-get="{% url 'products:index' %}"
-                        hx-target="body"
-                        hx-push-url="true">
-                            Вернуться на главную
-                        </a>
+                <!-- Имя и Фамилия -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="space-y-1">
+                        <label class="block text-sm text-gray-700">
+                            Имя
+                        </label>
+                        <input
+                            type="text"
+                            name="first_name"
+                            required
+                            class="w-full minimal-input px-3 py-2.5 {% if form.first_name.errors %}error-field{% endif %}"
+                            placeholder="Имя"
+                            autocomplete="given-name"
+                            {% if form.first_name.value %}
+                                value="{{ form.first_name.value }}"
+                            {% endif %}
+                        >
+                        {% if form.first_name.errors %}
+                        <div class="error-message">
+                            <svg class="error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {{ form.first_name.errors.0 }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block text-sm text-gray-700">
+                            Фамилия
+                        </label>
+                        <input
+                            type="text"
+                            name="last_name"
+                            required
+                            class="w-full minimal-input px-3 py-2.5 {% if form.last_name.errors %}error-field{% endif %}"
+                            placeholder="Фамилия"
+                            autocomplete="family-name"
+                            {% if form.last_name.value %}
+                                value="{{ form.last_name.value }}"
+                            {% endif %}
+                        >
+                        {% if form.last_name.errors %}
+                        <div class="error-message">
+                            <svg class="error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {{ form.last_name.errors.0 }}
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
 
-            </form>
+                <!-- Телефон -->
+                <div class="space-y-1">
+                    <label class="block text-sm text-gray-700">
+                        Телефон
+                        <span class="text-gray-400 text-xs ml-1">(необязательно)</span>
+                    </label>
+                    <input
+                        type="tel"
+                        name="phone"
+                        class="w-full minimal-input px-3 py-2.5 {% if form.phone.errors %}error-field{% endif %}"
+                        placeholder="Телефон"
+                        autocomplete="tel"
+                        {% if form.phone.value %}
+                            value="{{ form.phone.value }}"
+                        {% endif %}
+                    >
+                    {% if form.phone.errors %}
+                    <div class="error-message">
+                        <svg class="error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {{ form.phone.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Адрес -->
+                <div class="space-y-1">
+                    <label class="block text-sm text-gray-700">
+                        Адрес
+                        <span class="text-gray-400 text-xs ml-1">(необязательно)</span>
+                    </label>
+                    <textarea
+                        name="address"
+                        rows="2"
+                        class="w-full minimal-input px-3 py-2.5 resize-none {% if form.address.errors %}error-field{% endif %}"
+                        placeholder="Адрес"
+                        autocomplete="street-address"
+                    >{% if form.address.value %}{{ form.address.value }}{% endif %}</textarea>
+                    {% if form.address.errors %}
+                    <div class="error-message">
+                        <svg class="error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {{ form.address.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Пароли -->
+                <div class="space-y-5">
+                    <div class="space-y-1">
+                        <label class="block text-sm text-gray-700">
+                            Пароль
+                        </label>
+                        <input
+                            type="password"
+                            name="password1"
+                            required
+                            class="w-full minimal-input px-3 py-2.5 {% if form.password1.errors %}error-field{% endif %}"
+                            placeholder="Пароль"
+                            autocomplete="new-password"
+                        >
+                        {% if form.password1.errors %}
+                        <div class="error-message">
+                            <svg class="error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {{ form.password1.errors.0 }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block text-sm text-gray-700">
+                            Подтверждение пароля
+                        </label>
+                        <input
+                            type="password"
+                            name="password2"
+                            required
+                            class="w-full minimal-input px-3 py-2.5 {% if form.password2.errors %}error-field{% endif %}"
+                            placeholder="Подтвердите пароль"
+                            autocomplete="new-password"
+                        >
+                        {% if form.password2.errors %}
+                        <div class="error-message">
+                            <svg class="error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {{ form.password2.errors.0 }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Общие ошибки формы -->
+            {% if form.non_field_errors %}
+            <div class="p-4 border border-red-300 bg-red-50 rounded">
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.998-.833-2.732 0L4.342 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                    <div>
+                        <p class="text-red-800 font-medium text-sm mb-1">Ошибка регистрации</p>
+                        <div class="space-y-1">
+                            {% for error in form.non_field_errors %}
+                            <p class="text-red-700 text-sm">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Кнопка -->
+            <div>
+                <button
+                    type="submit"
+                    class="w-full py-3 bg-black text-white font-normal hover:bg-gray-800 transition-colors text-base"
+                >
+                    Зарегистрироваться
+                </button>
+            </div>
+
+            <!-- Ссылка на вход -->
+            <div class="text-center pt-6 border-t border-gray-100">
+                <p class="text-sm text-gray-600">
+                    Уже есть аккаунт?
+                    <a href="{% url 'users:login' %}" class="text-black hover:text-gray-800 transition-colors ml-1 border-b border-gray-300 hover:border-black font-medium">
+                        Войти
+                    </a>
+                </p>
+            </div>
+        </form>
+
+        <!-- Футер -->
+        <div class="mt-10 text-center">
+            <p class="text-xs text-gray-400">v1.0</p>
         </div>
     </div>
 </div>
 
-<style>
-    /* Дополнительные стили для улучшения UX */
-    input:focus {
-        box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Плавное появление ошибок */
-    .bg-red-50 {
-        animation: fadeIn 0.3s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-</style>
+{% endblock %}

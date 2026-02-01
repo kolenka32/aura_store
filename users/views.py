@@ -1,19 +1,38 @@
-from django.contrib.auth import get_user_model, logout, login
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.template.response import TemplateResponse
-from django.views import View
 
-from users.forms import CustomUserUpdateForm, CustomUserLoginForm
+from users.forms import CustomUserLoginForm, CustomUserCreationForm
 
 
 # Create your views here.
+@login_required(login_url='/users/login/')
+def profile(request):
+
+    user = request.user
+    context = {
+        'title': f'ПРОФИЛЬ {user.first_name} {user.last_name}',
+    }
+
+    return TemplateResponse(request, 'users/profile.html', context)
 
 def register(request):
     if request.method == 'POST':
-        form =
-    return render(request, 'users/register.html')
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('users:login')
+        else:
+            print(form.errors)
+    else:
+        form = CustomUserCreationForm()
+
+    context = {
+        'form': form,
+    }
+
+    return TemplateResponse(request, 'users/register.html', context)
 
 
 def login_view(request):
@@ -22,21 +41,23 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-            return redirect('main:index')
+            return redirect('users:profile')
         else:
             print(form.errors)
     else:
         form = CustomUserLoginForm()
-    return TemplateResponse(request, 'users/login.html', {'form': form})
-
+    return render(request, 'users/login.html', {'form': form})
 
 
 def logout_view(request):
     logout(request)
-    return redirect('products:index')
+
+    return redirect('users:login')
 
 
-@login_required(login_url='/users/login/')
-def profile(request):
-
-    return render(request, 'users/profile.html')
+def profile_orders(request):
+    user = request.user
+    context = {
+        'title': f'ПРОФИЛЬ {user.first_name} {user.last_name}',
+    }
+    return TemplateResponse(request, 'users/profile_orders.html', context)
