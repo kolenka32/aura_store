@@ -1,14 +1,21 @@
 from django.utils.deprecation import MiddlewareMixin
 from .models import Cart
 
-class CartMiddleware(MiddlewareMixin):
+class CartMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
 
-    def process_request(self, request):
+    def __call__(self, request):
         if not request.session.session_key:
             request.session.create()
 
-        request.cart, created = Cart.objects.get_or_create(
-            session_key=request.session.session_key
-        )
+        session_key = request.session.session_key
 
-        return None
+        cart = Cart.objects.filter(session_key=session_key).first()
+
+        if not cart:
+            cart = Cart.objects.create(session_key=session_key)
+
+        request.cart = cart
+
+        return self.get_response(request)

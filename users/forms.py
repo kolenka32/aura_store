@@ -40,3 +40,9 @@ class CustomUserLoginForm(AuthenticationForm):
             elif not self.user_cache.is_active:
                 raise forms.ValidationError('This account is inactive')
         return self.cleaned_data
+
+
+class CustomUserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ('email', 'first_name', 'last_name', 'address', 'phone')

@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
@@ -9,34 +10,22 @@ from products.models import ProductSize, Product
 from .forms import AddToCartForm
 from .models import Cart, CartItem
 
+from .utils import get_cart
 
 
 # Create your views here.
 
 
-class CartMixin():
-    def get_cart(self, request):
-        if hasattr(request, 'cart'):
-            return request.cart
 
-        if not request.session.session_key:
-            request.session.create()
-
-
-        cart, created = Cart.objects.get_or_create(session_key=request.session.session_key)
-
-        request.session['cart_id'] = cart.id
-        request.session.modified = True
-        return cart
-
-class CartView(CartMixin, View):
+class CartView(LoginRequiredMixin, View):
+    login_url = 'users:login'
     def get(self, request):
-        cart = self.get_cart(request)
+        cart = get_cart(request)
         
         context = {
             'title': 'AURA STORE',
             'cart': cart,
-            'cart_items': cart.items.select_related('product', 'product_size__size').order_by('-added_at'),
+            'cart_items': cart.items.select_related('product', 'product_size').order_by('-added_at'),
             'total_price': cart.subtotal,
             'total_items': cart.total_items,
         }
@@ -44,10 +33,10 @@ class CartView(CartMixin, View):
         return TemplateResponse(request, 'cart/cart.html', context)
 
 
-class AddToCartView(CartMixin, View):
+class AddToCartView(View):
     @transaction.atomic()
     def post(self, request, slug):
-        cart = self.get_cart(request)
+        cart = get_cart(request)
         product = get_object_or_404(Product, slug=slug)
         can_add_to_cart = True
         
@@ -100,13 +89,13 @@ class AddToCartView(CartMixin, View):
         return redirect('products:product_detail', slug=product.slug)
 
 
-class UpdateCartItemView(CartMixin, View):
+class UpdateCartItemView(View):
     @transaction.atomic()
     def post(self, request, item_id):
 
         message = None
         try:
-            cart = self.get_cart(request)
+            cart = get_cart(request)
             cart_item = get_object_or_404(CartItem, id=item_id)
 
             if cart_item.quantity >= cart_item.product_size.stock:
@@ -129,12 +118,12 @@ class UpdateCartItemView(CartMixin, View):
 
 
 
-class RemoveCartItemView(CartMixin, View):
+class RemoveCartItemView(View):
     @transaction.atomic()
     def post(self, request, item_id):
         message = None
         try:
-            cart = self.get_cart(request)
+            cart = get_cart(request)
             cart_item = get_object_or_404(CartItem, id=item_id)
 
             if cart_item.quantity == 1:
@@ -159,11 +148,11 @@ class RemoveCartItemView(CartMixin, View):
         return redirect('cart:cart')
 
 
-class DeleteCartItemView(CartMixin, View):
+class DeleteCartItemView(View):
     @transaction.atomic()
     def post(self, request, item_id):
         try:
-            cart = self.get_cart(request)
+            cart = get_cart(request)
             cart_item = get_object_or_404(CartItem, id=item_id)
 
             cart_item.delete()

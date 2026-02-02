@@ -3,11 +3,24 @@ from django.contrib.sessions.models import Session
 from products.models import Product, ProductSize
 from decimal import Decimal
 
+from users.models import CustomUser
+
 
 class Cart(models.Model):
-    session_key = models.CharField(max_length=100, unique=True)
+    user = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name='carts',
+        null=True,
+        blank=True
+    )
+
+    session_key = models.CharField(max_length=100, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.created_at}"
 
     @property
     def total_items(self):
